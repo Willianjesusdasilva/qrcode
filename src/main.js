@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import { inflate } from "pako";
 import "./style.css";
 
 const content = document.querySelector("#qr-content");
@@ -26,6 +27,24 @@ function readableColor(value) {
   return value.toUpperCase();
 }
 
+function decodeGoogleSearchEntity(value) {
+  try {
+    const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
+    const compressed = Uint8Array.from(atob(padded), (character) => character.charCodeAt(0));
+    const decoded = new TextDecoder().decode(inflate(compressed));
+    const dataId = decoded.match(/0x[a-f0-9]+:0x[a-f0-9]+/i)?.[0];
+    if (!dataId) return null;
+
+    const cidHex = dataId.split(":")[1];
+    return {
+      dataId,
+      ludocid: BigInt(cidHex).toString(10),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function createGoogleReviewLink(value) {
   const input = value.trim();
   if (!input) return { link: "", error: "" };
@@ -47,6 +66,21 @@ function createGoogleReviewLink(value) {
       url.searchParams.get("query_place_id") ||
       url.searchParams.get("q")?.match(/place_id:([^&]+)/i)?.[1] ||
       "";
+
+    if (!placeId && /google\.[^/]+\/search/i.test(url.href)) {
+      const entity = decodeGoogleSearchEntity(url.searchParams.get("gs_ssp") || "");
+      const businessName = url.searchParams.get("q") || url.searchParams.get("oq") || "";
+
+      if (entity && businessName) {
+        const search = new URL("https://www.google.com/search");
+        search.searchParams.set("q", businessName);
+        search.searchParams.set("ludocid", entity.ludocid);
+        return {
+          link: `${search.toString()}#lrd=${entity.dataId},3,,,,`,
+          error: "",
+        };
+      }
+    }
   } catch {
     placeId = input.match(/(?:placeid|query_place_id)=([^&\s]+)/i)?.[1] || "";
   }

@@ -27,6 +27,28 @@ function readableColor(value) {
   return value.toUpperCase();
 }
 
+function placeIdFromDataId(dataId) {
+  try {
+    const values = dataId.split(":").map((value) => BigInt(value));
+    const bytes = [0x0a, 0x12, 0x09];
+
+    for (let index = 0; index < 2; index += 1) {
+      let value = values[index];
+      if (index === 1) bytes.push(0x11);
+
+      for (let byte = 0; byte < 8; byte += 1) {
+        bytes.push(Number(value & 255n));
+        value >>= 8n;
+      }
+    }
+
+    const base64 = btoa(String.fromCharCode(...bytes));
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  } catch {
+    return "";
+  }
+}
+
 function decodeGoogleSearchEntity(value) {
   try {
     const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
@@ -35,10 +57,9 @@ function decodeGoogleSearchEntity(value) {
     const dataId = decoded.match(/0x[a-f0-9]+:0x[a-f0-9]+/i)?.[0];
     if (!dataId) return null;
 
-    const cidHex = dataId.split(":")[1];
     return {
       dataId,
-      ludocid: BigInt(cidHex).toString(10),
+      placeId: placeIdFromDataId(dataId),
     };
   } catch {
     return null;
@@ -71,12 +92,9 @@ function createGoogleReviewLink(value) {
       const entity = decodeGoogleSearchEntity(url.searchParams.get("gs_ssp") || "");
       const businessName = url.searchParams.get("q") || url.searchParams.get("oq") || "";
 
-      if (entity && businessName) {
-        const search = new URL("https://www.google.com/search");
-        search.searchParams.set("q", businessName);
-        search.searchParams.set("ludocid", entity.ludocid);
+      if (entity?.placeId && businessName) {
         return {
-          link: `${search.toString()}#lrd=${entity.dataId},3,,,,`,
+          link: `https://search.google.com/local/writereview?placeid=${encodeURIComponent(entity.placeId)}`,
           error: "",
         };
       }

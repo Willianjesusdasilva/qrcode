@@ -110,6 +110,11 @@ function createGoogleReviewLink(value) {
       "";
   }
 
+  if (!placeId) {
+    const dataId = input.match(/(?:!1s)?(0x[a-f0-9]+:0x[a-f0-9]+)/i)?.[1];
+    if (dataId) placeId = placeIdFromDataId(dataId);
+  }
+
   if (placeId) {
     return {
       link: `https://search.google.com/local/writereview?placeid=${encodeURIComponent(decodeURIComponent(placeId))}`,

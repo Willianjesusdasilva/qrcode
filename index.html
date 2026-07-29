@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4efe6" />
+    <meta
+      name="description"
+      content="Crie QR Codes personalizados em alta resolução, direto no navegador."
+    />
+    <title>QR Lume — Gerador de QR Code</title>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="QR Lume, início">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </span>
+          <span>QR Lume</span>
+        </a>
+        <p>Simples. Nítido. Seu.</p>
+      </header>
+
+      <section class="hero">
+        <div class="intro">
+          <span class="eyebrow">Gerador gratuito</span>
+          <h1>Transforme qualquer link em um <em>QR Code.</em></h1>
+          <p class="lede">
+            Crie códigos personalizados, prontos para tela ou impressão.
+            Sem cadastro e sem enviar seus dados para nenhum servidor.
+          </p>
+
+          <div class="feature-strip" aria-label="Vantagens">
+            <span><b>01</b> Alta resolução</span>
+            <span><b>02</b> Personalizável</span>
+            <span><b>03</b> 100% privado</span>
+          </div>
+        </div>
+
+        <div class="generator-card">
+          <div class="form-pane">
+            <fieldset class="content-type">
+              <legend>O que você quer transformar?</legend>
+              <div class="type-options">
+                <button class="type-option active" type="button" data-type="link" aria-pressed="true">
+                  <span class="type-icon" aria-hidden="true">↗</span>
+                  <span><b>Link</b><small>Site, vídeo ou perfil</small></span>
+                </button>
+                <button class="type-option" type="button" data-type="text" aria-pressed="false">
+                  <span class="type-icon" aria-hidden="true">Aa</span>
+                  <span><b>Texto</b><small>Mensagem ou informação</small></span>
+                </button>
+              </div>
+            </fieldset>
+
+            <label class="field-label" id="content-label" for="qr-content">Cole seu link</label>
+            <div class="input-wrap">
+              <textarea
+                id="qr-content"
+                rows="3"
+                maxlength="2000"
+                spellcheck="false"
+                inputmode="url"
+                placeholder="https://seusite.com"
+              >https://github.com</textarea>
+              <span id="char-count" aria-live="polite">18 / 2000</span>
+            </div>
+
+            <div class="settings-row">
+              <fieldset>
+                <legend>Cor do código</legend>
+                <label class="color-control" title="Escolher cor do QR Code">
+                  <input id="dark-color" type="color" value="#173f35" />
+                  <span id="dark-value">#173F35</span>
+                </label>
+              </fieldset>
+              <fieldset>
+                <legend>Cor do fundo</legend>
+                <label class="color-control" title="Escolher cor do fundo">
+                  <input id="light-color" type="color" value="#ffffff" />
+                  <span id="light-value">#FFFFFF</span>
+                </label>
+              </fieldset>
+            </div>
+
+            <fieldset class="size-field">
+              <div class="range-head">
+                <legend>Qualidade do arquivo</legend>
+                <output id="size-output" for="qr-size">2048 px</output>
+              </div>
+              <input
+                id="qr-size"
+                type="range"
+                min="512"
+                max="4096"
+                step="512"
+                value="2048"
+              />
+              <div class="range-labels">
+                <span>512 px</span>
+                <span>4096 px</span>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="preview-pane">
+            <span class="preview-label">Prévia</span>
+            <div class="qr-frame">
+              <canvas id="qr-canvas" aria-label="Prévia do QR Code"></canvas>
+            </div>
+            <button id="download-button" type="button">
+              <span>Baixar PNG</span>
+              <span aria-hidden="true">↓</span>
+            </button>
+            <p id="status" role="status" aria-live="polite">Pronto para baixar em alta qualidade</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>Feito para compartilhar boas ideias.</p>
+        <p>Seus dados nunca saem deste dispositivo.</p>
+      </footer>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

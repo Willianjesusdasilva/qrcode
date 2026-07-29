@@ -55,32 +55,14 @@ input {
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: inherit;
-  font-size: 1.1rem;
-  font-weight: 700;
+  display: block;
   text-decoration: none;
 }
 
-.brand-mark {
-  position: relative;
-  width: 29px;
-  height: 29px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
-}
-
-.brand-mark i {
-  border: 3px solid var(--green);
-}
-
-.brand-mark i:last-child {
-  border: 0;
-  background: var(--lime);
-  box-shadow: inset 0 0 0 3px var(--green);
+.brand img {
+  display: block;
+  width: 143px;
+  height: 32px;
 }
 
 .hero {

@@ -1,0 +1,17 @@
+{
+  "name": "QR Lume — Gerador de QR Code",
+  "short_name": "QR Lume",
+  "description": "Gerador de QR Code rápido, privado e em alta resolução.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3eee4",
+  "theme_color": "#173f35",
+  "icons": [
+    {
+      "src": "./qr-lume-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

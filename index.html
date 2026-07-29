@@ -50,6 +50,10 @@
                   <span class="type-icon" aria-hidden="true">Aa</span>
                   <span><b>Texto</b><small>Mensagem ou informação</small></span>
                 </button>
+                <button class="type-option google-option" type="button" data-type="google-review" aria-pressed="false">
+                  <span class="type-icon google-icon" aria-hidden="true">★</span>
+                  <span><b>Avaliação Google</b><small>Link direto para deixar uma avaliação</small></span>
+                </button>
               </div>
             </fieldset>
 
@@ -65,6 +69,11 @@
               >https://github.com</textarea>
               <span id="char-count" aria-live="polite">18 / 2000</span>
             </div>
+            <div id="generated-link" class="generated-link" hidden>
+              <span>Link de avaliação gerado</span>
+              <a id="review-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+            </div>
+            <p id="input-help" class="input-help" hidden></p>
 
             <div class="settings-row">
               <fieldset>

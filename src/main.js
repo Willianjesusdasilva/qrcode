@@ -4,6 +4,9 @@ import "./style.css";
 const content = document.querySelector("#qr-content");
 const contentLabel = document.querySelector("#content-label");
 const typeOptions = document.querySelectorAll(".type-option");
+const generatedLink = document.querySelector("#generated-link");
+const reviewLink = document.querySelector("#review-link");
+const inputHelp = document.querySelector("#input-help");
 const charCount = document.querySelector("#char-count");
 const darkColor = document.querySelector("#dark-color");
 const lightColor = document.querySelector("#light-color");
@@ -17,9 +20,62 @@ const status = document.querySelector("#status");
 
 let renderTimer;
 let contentType = "link";
+let effectiveContent = content.value.trim();
 
 function readableColor(value) {
   return value.toUpperCase();
+}
+
+function createGoogleReviewLink(value) {
+  const input = value.trim();
+  if (!input) return { link: "", error: "" };
+
+  if (/search\.google\.com\/local\/writereview/i.test(input) || /\/review(?:[/?#]|$)/i.test(input)) {
+    return { link: input, error: "" };
+  }
+
+  const businessProfile = input.match(/https?:\/\/g\.page\/r\/([^/?#]+)/i);
+  if (businessProfile) {
+    return { link: `https://g.page/r/${businessProfile[1]}/review`, error: "" };
+  }
+
+  let placeId = "";
+  try {
+    const url = new URL(input);
+    placeId =
+      url.searchParams.get("placeid") ||
+      url.searchParams.get("query_place_id") ||
+      url.searchParams.get("q")?.match(/place_id:([^&]+)/i)?.[1] ||
+      "";
+  } catch {
+    placeId = input.match(/(?:placeid|query_place_id)=([^&\s]+)/i)?.[1] || "";
+  }
+
+  if (!placeId) {
+    placeId =
+      input.match(/!1s(ChI[A-Za-z0-9_-]+)/)?.[1] ||
+      input.match(/\b(ChI[A-Za-z0-9_-]{15,})\b/)?.[1] ||
+      "";
+  }
+
+  if (placeId) {
+    return {
+      link: `https://search.google.com/local/writereview?placeid=${encodeURIComponent(decodeURIComponent(placeId))}`,
+      error: "",
+    };
+  }
+
+  if (/maps\.app\.goo\.gl|goo\.gl\/maps/i.test(input)) {
+    return {
+      link: "",
+      error: "Este é um link curto. Abra-o no navegador e cole aqui o endereço completo exibido na barra.",
+    };
+  }
+
+  return {
+    link: "",
+    error: "Não encontrei o identificador da empresa. Use o link completo do Google Maps ou o link “Pedir avaliações” do Perfil da Empresa.",
+  };
 }
 
 async function drawQr() {
@@ -29,10 +85,28 @@ async function drawQr() {
   lightValue.textContent = readableColor(lightColor.value);
   sizeOutput.textContent = `${size.value} px`;
 
-  if (!text) {
+  generatedLink.hidden = true;
+  inputHelp.hidden = true;
+  effectiveContent = text;
+
+  if (contentType === "google-review" && text) {
+    const result = createGoogleReviewLink(text);
+    effectiveContent = result.link;
+
+    if (result.link) {
+      generatedLink.hidden = false;
+      reviewLink.href = result.link;
+      reviewLink.textContent = result.link;
+    } else {
+      inputHelp.hidden = false;
+      inputHelp.textContent = result.error;
+    }
+  }
+
+  if (!effectiveContent) {
     canvas.hidden = true;
     downloadButton.disabled = true;
-    status.textContent = "Digite um texto ou link para gerar";
+    status.textContent = text ? "Aguardando um link compatível" : "Digite um texto ou link para gerar";
     return;
   }
 
@@ -40,7 +114,7 @@ async function drawQr() {
   downloadButton.disabled = false;
 
   try {
-    await QRCode.toCanvas(canvas, text, {
+    await QRCode.toCanvas(canvas, effectiveContent, {
       width: 360,
       margin: 3,
       errorCorrectionLevel: "H",
@@ -73,10 +147,14 @@ function selectContentType(type) {
     contentLabel.textContent = "Cole seu link";
     content.placeholder = "https://seusite.com";
     content.inputMode = "url";
-  } else {
+  } else if (type === "text") {
     contentLabel.textContent = "Digite seu texto";
     content.placeholder = "Escreva sua mensagem aqui…";
     content.inputMode = "text";
+  } else {
+    contentLabel.textContent = "Cole o link da sua empresa no Google";
+    content.placeholder = "https://www.google.com/maps/place/...";
+    content.inputMode = "url";
   }
 
   content.focus();
@@ -84,7 +162,7 @@ function selectContentType(type) {
 }
 
 async function downloadQr() {
-  const text = content.value.trim();
+  const text = effectiveContent;
   if (!text) return;
 
   downloadButton.disabled = true;

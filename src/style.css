@@ -165,6 +165,14 @@ legend {
   gap: 12px;
 }
 
+.google-option {
+  grid-column: 1 / -1;
+}
+
+.google-icon {
+  color: #173f35;
+}
+
 .type-option {
   display: flex;
   align-items: center;
@@ -259,6 +267,41 @@ textarea:focus {
   bottom: 11px;
   color: #7f908b;
   font-size: 0.7rem;
+}
+
+.generated-link {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #bfd16f;
+  border-radius: 10px;
+  background: #f5f9e8;
+}
+
+.generated-link span {
+  display: block;
+  margin-bottom: 4px;
+  color: #57722f;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.generated-link a {
+  display: block;
+  overflow: hidden;
+  color: var(--green);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.input-help {
+  margin: 10px 2px 0;
+  color: #9a522e;
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 .settings-row {
